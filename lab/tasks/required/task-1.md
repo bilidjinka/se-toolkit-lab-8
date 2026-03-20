@@ -70,7 +70,7 @@ Bot-specific Python project with dependencies. `cd bot && uv sync` must work wit
 
 ## Verify
 
-### Test mode
+### Verify in test mode
 
 Run on your VM:
 
