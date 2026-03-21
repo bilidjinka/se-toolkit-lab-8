@@ -72,8 +72,8 @@ Docs:
 
 ### Install `uv`
 
-- [Install `uv` using the commands from the official site](#install-uv-using-the-commands-from-the-official-site)
-- [Install `uv` using `Nix`](#install-uv-using-nix)
+- Method 1: [Install `uv` using the commands from the official site](#install-uv-using-the-commands-from-the-official-site)
+- Method 2: [Install `uv` using `Nix`](#install-uv-using-nix)
 
 #### Install `uv` using the commands from the official site
 
