@@ -119,13 +119,7 @@ include = [
   # "nanobot-websocket-channel",
 ]
 extraPaths = ["backend", "qwen-code-api"]
-exclude = [
-  "**/__pycache__",
-  "**/node_modules",
-  "**/.*",
-  ".venv",
-  ".direnv",
-]
+exclude = ["**/__pycache__", "**/node_modules", "**/.*", ".venv", ".direnv"]
 typeCheckingMode = "strict"
 reportAssignmentType = "none"
 reportIncompatibleVariableOverride = "none"
