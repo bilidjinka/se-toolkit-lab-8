@@ -26,9 +26,9 @@ In Task 1 you ran `nanobot agent` from the VM terminal. For production, nanobot 
 
 2. Your repo-local `nanobot/` directory needs a few more files for Docker deployment:
 
-   - **`entrypoint.py`** — resolves environment variables (LLM API key, host/port, backend URL) into the config at runtime, then launches `nanobot gateway`. This is needed because Docker passes config via env vars, not by editing files.
+   - **`entrypoint.py`** — resolves environment variables (LLM API key, gateway host/port, backend URL) into the config at runtime, then launches `nanobot gateway`. This is needed because Docker passes config via env vars, not by editing files.
 
-     > **Hint:** Read `config.json`, inject env var values for provider API key/base URL, gateway host/port, webchat host/port, and MCP server env vars (backend URL plus backend API key). Write a resolved config. Then `os.execvp("nanobot", ["nanobot", "gateway", "--config", resolved, "--workspace", workspace])`.
+     > **Hint:** Read `config.json`, inject env var values for provider API key/base URL, gateway host/port, and MCP server env vars (backend URL plus backend API key). Write a resolved config. Then `os.execvp("nanobot", ["nanobot", "gateway", "--config", resolved, "--workspace", workspace])`.
 
    - **`Dockerfile`** — multi-stage build with `uv` (same pattern as `backend/Dockerfile`). Final CMD: `python /app/nanobot/entrypoint.py`.
 
@@ -39,20 +39,7 @@ In Task 1 you ran `nanobot agent` from the VM terminal. For production, nanobot 
    - Notice that the scaffold uses container-local URLs such as `http://backend:...` and `http://qwen-code-api:...` rather than the VM-shell `localhost` values from Task 1.
    - Keep it on `lms-network`.
 
-4. Uncomment the scaffolded `/ws/chat` route in `caddy/Caddyfile`, then uncomment the related `nanobot` lines in the `caddy` service inside `docker-compose.yml`:
-
-   ```
-   handle /ws/chat {
-       reverse_proxy http://nanobot:{$NANOBOT_WEBCHAT_CONTAINER_PORT}
-   }
-   ```
-
-   You need all three pieces together:
-   - `nanobot` in caddy's `depends_on`
-   - `NANOBOT_WEBCHAT_CONTAINER_PORT` in caddy's environment
-   - the `/ws/chat` route in `Caddyfile`
-
-5. Build and deploy. Because some services use `additional_contexts`, you must **build first** and then start:
+4. Build and deploy. Because some services use `additional_contexts`, you must **build first** and then start:
 
    ```terminal
    docker compose --env-file .env.docker.secret build nanobot
@@ -62,7 +49,7 @@ In Task 1 you ran `nanobot agent` from the VM terminal. For production, nanobot 
    > [!NOTE]
    > `docker compose up --build` may fail with a "workspace" context error. Always `build` the service first, then `up -d` separately.
 
-6. Check that the service starts cleanly:
+5. Check that the service starts cleanly:
 
    ```terminal
    docker compose --env-file .env.docker.secret ps
@@ -129,22 +116,41 @@ Both are in a single repository. The webchat plugin handles:
 
    This registers the `webchat` channel type in nanobot via a Python entry point. You can verify: `nanobot` will now recognize `webchat` as a valid channel in the config.
 
-3. Make sure your `nanobot/config.json` has the webchat channel enabled:
+3. Update your `entrypoint.py` so it also injects the webchat channel settings from Docker env vars:
+
+   - enable the `webchat` channel
+   - set its host from `NANOBOT_WEBCHAT_CONTAINER_ADDRESS`
+   - set its port from `NANOBOT_WEBCHAT_CONTAINER_PORT`
+
+4. Make sure your `nanobot/config.json` has the webchat channel enabled:
 
    ```json
    "channels": {
      "webchat": {
        "enabled": true,
-       "allow_from": ["*"]
+       "allowFrom": ["*"]
      }
    }
    ```
 
-4. Uncomment the scaffolded `client-web-flutter` service in `docker-compose.yml`:
+5. Uncomment the scaffolded `/ws/chat` route in `caddy/Caddyfile`, then uncomment the related `nanobot` lines in the `caddy` service inside `docker-compose.yml`:
+
+   ```
+   handle /ws/chat {
+       reverse_proxy http://nanobot:{$NANOBOT_WEBCHAT_CONTAINER_PORT}
+   }
+   ```
+
+   You need all three pieces together:
+   - `nanobot` in caddy's `depends_on`
+   - `NANOBOT_WEBCHAT_CONTAINER_PORT` in caddy's environment
+   - the `/ws/chat` route in `Caddyfile`
+
+6. Uncomment the scaffolded `client-web-flutter` service in `docker-compose.yml`:
    - It should build from `nanobot-websocket-channel/client-web-flutter/`
    - It should write the compiled app into the `client-web-flutter` named volume
 
-5. Uncomment the scaffolded Flutter-related lines in the `caddy` service and `caddy/Caddyfile`:
+7. Uncomment the scaffolded Flutter-related lines in the `caddy` service and `caddy/Caddyfile`:
    - Mount the Flutter volume at `/srv/flutter:ro`
    - Add `client-web-flutter` to `depends_on`
    - Enable the `/flutter` route:
@@ -157,23 +163,22 @@ Both are in a single repository. The webchat plugin handles:
    }
    ```
 
-6. Build the Flutter client and redeploy:
+8. Build the Flutter client and redeploy:
 
    ```terminal
    docker compose --env-file .env.docker.secret build client-web-flutter
    docker compose --env-file .env.docker.secret up -d
    ```
 
-7. Test the WebSocket endpoint through Caddy with the deployment access key:
+9. Test the WebSocket endpoint through Caddy with the deployment access key:
 
    ```terminal
    echo '{"content":"What labs are available?"}' | websocat "ws://localhost:42002/ws/chat?access_key=YOUR_NANOBOT_ACCESS_KEY"
    ```
 
-8. Open `http://<your-vm-ip>:42002/flutter` in your browser. Log in with your `NANOBOT_ACCESS_KEY`. Start by asking the agent:
-
-   - `What can you do in this system?`
-   - One quiz or LMS/system question of your choice
+10. Open `http://<your-vm-ip>:42002/flutter` in your browser. Log in with your `NANOBOT_ACCESS_KEY`. Start by asking the agent:
+    - `What can you do in this system?`
+    - One quiz or LMS/system question of your choice
 
 <!-- STOP -->
 > [!CAUTION]
