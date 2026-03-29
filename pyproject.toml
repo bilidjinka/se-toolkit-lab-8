@@ -3,26 +3,19 @@ members = [
   "backend",
   "qwen-code-api",
   "mcp/mcp-lms",
-
-  # Uncomment these later in the lab after you add the matching repos/packages.
-
-  # "mcp/mcp-obs",
-  # "nanobot-websocket-channel/nanobot-channel-protocol",
-  # "nanobot-websocket-channel/mcp-webchat",
-  # "nanobot-websocket-channel/nanobot-webchat",
-  # "nanobot-websocket-channel/client-telegram-bot",
+  "mcp/mcp-obs",
+  "nanobot",
+  "nanobot-websocket-channel/nanobot-channel-protocol",
+  "nanobot-websocket-channel/mcp-webchat",
+  "nanobot-websocket-channel/nanobot-webchat",
 ]
 
 [tool.uv.sources]
 mcp-lms = { path = "mcp/mcp-lms", editable = true }
-
-# Uncomment these later in the lab after you add the matching repos/packages.
-
-# mcp-obs = { path = "mcp/mcp-obs", editable = true }
-# mcp-webchat = { path = "nanobot-websocket-channel/mcp-webchat", editable = true }
-# nanobot-channel-protocol = { path = "nanobot-websocket-channel/nanobot-channel-protocol", editable = true }
-# nanobot-webchat = { path = "nanobot-websocket-channel/nanobot-webchat", editable = true }
-# client-telegram-bot = { path = "nanobot-websocket-channel/client-telegram-bot", editable = true }
+mcp-obs = { path = "mcp/mcp-obs", editable = true }
+mcp-webchat = { path = "nanobot-websocket-channel/mcp-webchat", editable = true }
+nanobot-channel-protocol = { path = "nanobot-websocket-channel/nanobot-channel-protocol", editable = true }
+nanobot-webchat = { path = "nanobot-websocket-channel/nanobot-webchat", editable = true }
 
 [dependency-groups]
 dev = [
@@ -41,28 +34,17 @@ exclude = ["qwen-code-api"]
 select = ["RET503"]
 
 [tool.poe.tasks]
-# Run server
-
-## Check code and run server in dev mode
-
 [tool.poe.tasks.dev]
 help = "Run server after static analysis"
 sequence = ["check", "dev-unsafe"]
 
-## Run server
 [tool.poe.tasks.dev-unsafe]
 help = "Run server without static analysis"
 cmd = "python -m lms_backend.run"
 
-# Run static analysis
-
-## Run all tools
-
 [tool.poe.tasks.check]
 help = "Format, lint, typecheck"
 sequence = ["format", "lint", "typecheck"]
-
-## Typecheck
 
 [tool.poe.tasks.typecheck]
 help = "Run all typecheckers"
@@ -76,21 +58,13 @@ cmd = "ty check"
 help = "Run the 'pyright' typechecker"
 cmd = "pyright"
 
-## Lint
-
 [tool.poe.tasks.lint]
 help = "Run the 'ruff' linter"
 cmd = "ruff check"
 
-## Format
-
 [tool.poe.tasks.format]
 help = "Run the 'ruff' formatter"
 cmd = "ruff format"
-
-# Run dynamic analysis
-
-## Run tests
 
 [tool.poe.tasks.test]
 help = "Run all tests"
@@ -106,8 +80,6 @@ help = "Run end-to-end tests against the deployed API"
 cmd = "pytest backend/tests/e2e"
 envfile = "backend/.env.tests.e2e.secret"
 
-# Export OpenAPI schema
-
 [tool.poe.tasks.export-openapi]
 help = "Export OpenAPI schema to openapi.json"
 cmd = "python scripts/export-openapi.py"
@@ -117,8 +89,6 @@ env = { PYTHONPATH = "backend/src" }
 help = "Check that openapi.json is up to date"
 cmd = "python scripts/export-openapi.py --check"
 env = { PYTHONPATH = "backend/src" }
-
-# Query Qwen Code API
 
 [tool.poe.tasks.query-qwen-code-api]
 help = "Query the Qwen Code API: poe query-qwen-code-api [OPTIONS] <prompt>"
@@ -130,23 +100,16 @@ include = [
   "scripts",
   "mcp",
   "qwen-code-api",
-  
-  # Uncomment this later in the lab after you add the matching repos/packages.
-  
-  # "nanobot-websocket-channel"
+  "nanobot-websocket-channel"
 ]
 extraPaths = [
   "backend/src",
   "mcp/mcp-lms/src",
   "mcp/mcp-obs/src",
   "qwen-code-api/src",
-  
-  # Uncomment these later in the lab after you add the matching repos/packages.
-  
-  # "nanobot-websocket-channel/mcp-webchat/src",
-  # "nanobot-websocket-channel/nanobot-channel-protocol/src",
-  # "nanobot-websocket-channel/client-telegram-bot/src",
-  # "nanobot-websocket-channel/nanobot-webchat/src",
+  "nanobot-websocket-channel/mcp-webchat/src",
+  "nanobot-websocket-channel/nanobot-channel-protocol/src",
+  "nanobot-websocket-channel/nanobot-webchat/src",
 ]
 exclude = ["**/__pycache__", "**/node_modules", "**/.*", ".venv", ".direnv"]
 typeCheckingMode = "strict"
@@ -165,10 +128,7 @@ include = [
   "backend",
   "mcp",
   "qwen-code-api",
-  
-  # Uncomment this later in the lab after you add the matching repos/packages.
-  
-  # "nanobot-websocket-channel"
+  "nanobot-websocket-channel"
 ]
 
 [tool.ty.rules]
