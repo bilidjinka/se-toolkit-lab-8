@@ -4,17 +4,14 @@ A simple BMI calculator and daily calorie tracker with personalized calorie reco
 
 ## Demo
 
-![BMI Calculator](keepfit/docs/screenshots/BMI-calc.png)
-*BMI Calculator: enter height and weight to get your BMI and category.*
+![BMI Calculator and Calorie Logger](docs/screenshots/bmi-calories.png)
+*Main page: BMI Calculator and Calorie Logger sections.*
 
-![Calorie Logger](keepfit/docs/screenshots/Calorie_logger.png)
-*Calorie Logger: log daily calories, see recent entries.*
+![Calorie Target Planner](docs/screenshots/planner.png)
+*Calorie Target Planner: personalized daily calorie recommendation.*
 
-![Calorie Recommendation](keepfit/docs/screenshots/Calorie_recommendation.png)
-*Calorie Target Planner: personalized daily calorie recommendation based on your goal.*
-
-![History](keepfit/docs/screenshots/History.png)
-*Personal History: view your recent requests, isolated per user.*
+> **Note:** Replace the placeholder screenshots above with actual screenshots of your running app.
+> Take them with: open the app in browser → screenshot the page → save to `docs/screenshots/`.
 
 ## Product Context
 
@@ -22,11 +19,11 @@ A simple BMI calculator and daily calorie tracker with personalized calorie reco
 
 **Problem:** People may not need a full calorie-tracking app. They may want to quickly check their BMI, log daily calories, or get a personalized calorie target — without installing heavy apps or creating accounts.
 
-**Solution:** Simple web tool that:
+**Solution:** A lightweight web tool that does three things well:
 
-1. Calculates BMI and stores previous measurements
-2. Logs daily calorie intake
-3. Recommends a daily calorie target based on the user's goal.
+1. Calculates BMI and saves measurements
+2. Logs daily calorie intake with a running total
+3. Recommends a daily calorie target based on the user's goal (target weight + date)
 
 ## Features
 
@@ -37,7 +34,7 @@ A simple BMI calculator and daily calorie tracker with personalized calorie reco
 | **BMI Calculator** | Enter height (cm) and weight (kg) → get BMI value and category (underweight / normal / overweight / obese). Saved to database. |
 | **Calorie Logger** | Log calories with a date picker. Shows today's total and last 10 entries. |
 | **Personal History** | Each browser gets its own private history (cookie-based user ID). No login required. |
-| **Calorie Target Planner** | Personalized daily calorie recommendation based on BMR (Mifflin-St Jeor), TDEE, activity level, target weight and date. Shows expected weekly change and safe-calorie warnings. |
+| **Calorie Target Planner** | Personalized daily calorie recommendation based on BMR (Mifflin-St Jeor), TDEE, activity level, target weight, and target date. Shows expected weekly change and safe-calorie warnings. |
 | **Responsive UI** | Clean, mobile-friendly interface. No external frameworks. |
 | **Docker support** | Production-ready Dockerfile for easy deployment. |
 
@@ -45,8 +42,11 @@ A simple BMI calculator and daily calorie tracker with personalized calorie reco
 
 | Feature | Description |
 |---|---|
+| **Charts / graphs** | Visual calorie and BMI trends over time. |
 | **User accounts** | Login/password for cross-device history sync. |
 | **Export data** | Download history as CSV. |
+| **Meal logging** | Log individual meals instead of daily totals. |
+| **Water intake tracker** | Track daily water consumption. |
 
 ## Usage
 
@@ -185,15 +185,13 @@ keepfit/
 ├── app.py              # Flask backend: routes, DB logic, recommendation engine
 ├── Dockerfile          # Production-ready Docker image
 ├── requirements.txt    # Python dependencies (flask, python-dotenv)
-├── README.md           # KeepFit-specific documentation
+├── README.md           # This file
 ├── .gitignore          # Ignores venv, .db, .env, __pycache__
 ├── .env.example        # Environment variable template
 ├── templates/
 │   └── index.html      # Single-page app with forms and fetch API
 ├── static/
 │   └── style.css       # Clean, responsive styles (no frameworks)
-├── tests/
-│   └── test_app.py     # 17 unit tests (V1 + V2)
-└── docs/
-    └── screenshots/    # Product screenshots
+└── tests/
+    └── test_app.py     # 17 unit tests (V1 + V2)
 ```

@@ -1,0 +1,165 @@
+/* ---- Reset & base ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #222;
+    background: #f5f7fa;
+    padding: 0 1rem;
+}
+
+/* ---- Header ---- */
+header {
+    text-align: center;
+    padding: 2rem 0 1rem;
+}
+header h1 {
+    font-size: 2.2rem;
+    color: #2d6a4f;
+}
+header p {
+    color: #555;
+    font-size: 1.05rem;
+}
+
+/* ---- Main layout ---- */
+main {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+section h2 {
+    margin-bottom: 1rem;
+    color: #2d6a4f;
+}
+
+/* ---- Forms ---- */
+.field {
+    margin-bottom: 0.8rem;
+}
+.field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+}
+.field input {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+.field input:focus {
+    outline: none;
+    border-color: #2d6a4f;
+    box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.15);
+}
+
+button[type="submit"],
+#load-history {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    background: #2d6a4f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+button[type="submit"]:hover,
+#load-history:hover {
+    background: #1b4332;
+}
+
+/* ---- Results ---- */
+.result {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+.result.success {
+    background: #d8f3dc;
+    color: #1b4332;
+    border: 1px solid #95d5b2;
+}
+.result.error {
+    background: #fde2e4;
+    color: #780000;
+    border: 1px solid #f48484;
+}
+.hidden { display: none; }
+
+/* ---- Summary ---- */
+.summary {
+    margin-top: 0.8rem;
+    padding: 0.6rem 1rem;
+    background: #e8e8e8;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* ---- Recent list ---- */
+.recent-list {
+    margin-top: 1rem;
+}
+.recent-list h3 {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+    color: #444;
+}
+.recent-list ul {
+    list-style: none;
+    padding: 0;
+}
+.recent-list li {
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+}
+
+/* ---- History tables ---- */
+.history-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+.history-table th,
+.history-table td {
+    text-align: left;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid #ddd;
+}
+.history-table th {
+    background: #f0f0f0;
+    font-weight: 600;
+}
+
+/* ---- Footer ---- */
+footer {
+    text-align: center;
+    padding: 2rem 0 1.5rem;
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 480px) {
+    header h1 { font-size: 1.7rem; }
+    section { padding: 1rem; }
+}

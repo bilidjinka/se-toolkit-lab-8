@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeepFit – BMI Calculator &amp; Calorie Tracker</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>KeepFit</h1>
+        <p>BMI Calculator &amp; Daily Calorie Tracker</p>
+    </header>
+
+    <main>
+        <!-- ===== BMI Calculator ===== -->
+        <section id="bmi-section">
+            <h2>BMI Calculator</h2>
+            <form id="bmi-form">
+                <div class="field">
+                    <label for="bmi-height">Height (cm)</label>
+                    <input type="number" id="bmi-height" name="height" min="50" max="300" step="0.1" required placeholder="e.g. 175">
+                </div>
+                <div class="field">
+                    <label for="bmi-weight">Weight (kg)</label>
+                    <input type="number" id="bmi-weight" name="weight" min="10" max="500" step="0.1" required placeholder="e.g. 70">
+                </div>
+                <div class="field">
+                    <label for="bmi-notes">Notes (optional)</label>
+                    <input type="text" id="bmi-notes" name="notes" placeholder="e.g. Morning measurement">
+                </div>
+                <button type="submit">Calculate BMI</button>
+            </form>
+            <div id="bmi-result" class="result hidden"></div>
+        </section>
+
+        <!-- ===== Calorie Logger ===== -->
+        <section id="calorie-section">
+            <h2>Calorie Logger</h2>
+            <form id="calorie-form">
+                <div class="field">
+                    <label for="cal-date">Date</label>
+                    <input type="date" id="cal-date" name="date" required>
+                </div>
+                <div class="field">
+                    <label for="cal-calories">Calories consumed</label>
+                    <input type="number" id="cal-calories" name="calories" min="0" required placeholder="e.g. 550">
+                </div>
+                <button type="submit">Log Calories</button>
+            </form>
+            <div id="cal-today" class="summary hidden"></div>
+            <div id="cal-result" class="result hidden"></div>
+            <div id="cal-recent" class="recent-list"></div>
+        </section>
+
+        <!-- ===== Calorie Target Planner (V2) ===== -->
+        <section id="planner-section">
+            <h2>Calorie Target Planner</h2>
+            <form id="planner-form">
+                <div class="field">
+                    <label for="plan-height">Height (cm)</label>
+                    <input type="number" id="plan-height" name="height_cm" min="50" max="300" step="0.1" required placeholder="e.g. 175">
+                </div>
+                <div class="field">
+                    <label for="plan-current-weight">Current weight (kg)</label>
+                    <input type="number" id="plan-current-weight" name="current_weight_kg" min="20" max="400" step="0.1" required placeholder="e.g. 80">
+                </div>
+                <div class="field">
+                    <label for="plan-target-weight">Target weight (kg)</label>
+                    <input type="number" id="plan-target-weight" name="target_weight_kg" min="20" max="400" step="0.1" required placeholder="e.g. 70">
+                </div>
+                <div class="field">
+                    <label for="plan-target-date">Target date</label>
+                    <input type="date" id="plan-target-date" name="target_date" required>
+                </div>
+                <div class="field">
+                    <label for="plan-activity">Activity level</label>
+                    <select id="plan-activity" name="activity_level" required>
+                        <option value="">— Select —</option>
+                        <option value="sedentary">Sedentary (little or no exercise)</option>
+                        <option value="lightly_active">Lightly active (1-3 days/week)</option>
+                        <option value="moderately_active">Moderately active (3-5 days/week)</option>
+                        <option value="very_active">Very active (6-7 days/week)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="plan-gender">Gender</label>
+                    <select id="plan-gender" name="gender" required>
+                        <option value="">— Select —</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="plan-age">Age</label>
+                    <input type="number" id="plan-age" name="age" min="10" max="120" placeholder="e.g. 25">
+                </div>
+                <button type="submit">Get Recommendation</button>
+            </form>
+            <div id="plan-result" class="result hidden"></div>
+        </section>
+
+        <!-- ===== History ===== -->
+        <section id="history-section">
+            <h2>Recent History</h2>
+            <button id="load-history">Load History</button>
+            <div id="history-content">
+                <div id="history-bmi" class="history-table"></div>
+                <div id="history-calories" class="history-table"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>KeepFit v2 &mdash; Built with Flask &amp; SQLite</p>
+    </footer>
+
+    <script>
+        // Set default date to today
+        document.getElementById("cal-date").value = new Date().toISOString().slice(0, 10);
+
+        // ---- Load history on page load ----
+        async function loadHistory() {
+            const res = await fetch("/api/history");
+            const data = await res.json();
+
+            const bmiDiv = document.getElementById("history-bmi");
+            if (data.bmi.length === 0) {
+                bmiDiv.innerHTML = "<p>No BMI entries yet.</p>";
+            } else {
+                bmiDiv.innerHTML = "<h3>BMI History</h3><table><tr><th>Date</th><th>Height</th><th>Weight</th><th>BMI</th><th>Notes</th></tr>" +
+                    data.bmi.map(r => `<tr><td>${r.date}</td><td>${r.height} cm</td><td>${r.weight} kg</td><td>${r.bmi}</td><td>${r.notes || '—'}</td></tr>`).join("") +
+                    "</table>";
+            }
+
+            const calDiv = document.getElementById("history-calories");
+            if (data.calories.length === 0) {
+                calDiv.innerHTML = "<p>No calorie entries yet.</p>";
+            } else {
+                calDiv.innerHTML = "<h3>Calorie History</h3><table><tr><th>Date</th><th>Calories</th></tr>" +
+                    data.calories.map(r => `<tr><td>${r.date}</td><td>${r.calories} kcal</td></tr>`).join("") +
+                    "</table>";
+            }
+        }
+        loadHistory();
+
+        // ---- BMI form ----
+        document.getElementById("bmi-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const height = parseFloat(document.getElementById("bmi-height").value);
+            const weight = parseFloat(document.getElementById("bmi-weight").value);
+            const notes = document.getElementById("bmi-notes").value;
+
+            const res = await fetch("/api/bmi", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ height, weight, notes }),
+            });
+            const data = await res.json();
+
+            const resultDiv = document.getElementById("bmi-result");
+            resultDiv.classList.remove("hidden");
+            if (data.error) {
+                resultDiv.className = "result error";
+                resultDiv.textContent = data.error;
+            } else {
+                resultDiv.className = "result success";
+                resultDiv.innerHTML = `Your BMI: <strong>${data.bmi}</strong> — <em>${data.category}</em>`;
+            }
+        });
+
+        // ---- Calorie form ----
+        document.getElementById("calorie-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const entryDate = document.getElementById("cal-date").value;
+            const calories = parseInt(document.getElementById("cal-calories").value, 10);
+
+            const res = await fetch("/api/calories", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ date: entryDate, calories }),
+            });
+            const data = await res.json();
+
+            const resultDiv = document.getElementById("cal-result");
+            resultDiv.classList.remove("hidden");
+            if (data.error) {
+                resultDiv.className = "result error";
+                resultDiv.textContent = data.error;
+            } else {
+                resultDiv.className = "result success";
+                resultDiv.textContent = "Calories logged!";
+
+                // Show today total
+                const todayDiv = document.getElementById("cal-today");
+                todayDiv.classList.remove("hidden");
+                todayDiv.textContent = `Today's total: ${data.today_total} kcal`;
+
+                // Render recent list
+                const recentDiv = document.getElementById("cal-recent");
+                if (data.recent.length === 0) {
+                    recentDiv.innerHTML = "<p>No entries yet.</p>";
+                } else {
+                    recentDiv.innerHTML = "<h3>Recent entries</h3><ul>" +
+                        data.recent.map(r => `<li>${r.date} — ${r.calories} kcal</li>`).join("") +
+                        "</ul>";
+                }
+            }
+        });
+
+        // ---- Calorie Target Planner ----
+        document.getElementById("planner-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const body = {
+                height_cm: parseFloat(document.getElementById("plan-height").value),
+                current_weight_kg: parseFloat(document.getElementById("plan-current-weight").value),
+                target_weight_kg: parseFloat(document.getElementById("plan-target-weight").value),
+                target_date: document.getElementById("plan-target-date").value,
+                activity_level: document.getElementById("plan-activity").value,
+                gender: document.getElementById("plan-gender").value,
+            };
+            const ageVal = document.getElementById("plan-age").value;
+            if (ageVal) body.age = parseInt(ageVal, 10);
+
+            const res = await fetch("/api/recommendation", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+            const data = await res.json();
+
+            const resultDiv = document.getElementById("plan-result");
+            resultDiv.classList.remove("hidden");
+            if (data.error) {
+                resultDiv.className = "result error";
+                resultDiv.textContent = data.error;
+            } else {
+                resultDiv.className = "result success";
+                resultDiv.innerHTML =
+                    `<p><strong>Current BMI:</strong> ${data.current_bmi} (${data.current_bmi_category})</p>` +
+                    `<p><strong>Maintenance (TDEE):</strong> ${data.tdee} kcal/day</p>` +
+                    `<p><strong>Daily calories for target:</strong> ${data.daily_calories_needed} kcal/day</p>` +
+                    `<p><strong>Expected weekly change:</strong> ${data.weekly_change_kg > 0 ? '+' : ''}${data.weekly_change_kg} kg</p>` +
+                    `<p>${data.recommendation_text}</p>`;
+            }
+        });
+
+        // ---- History button just refreshes ----
+        document.getElementById("load-history").addEventListener("click", loadHistory);
+    </script>
+</body>
+</html>
